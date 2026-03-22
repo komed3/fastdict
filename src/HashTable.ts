@@ -32,7 +32,7 @@ export class HashTable {
 
         try { this.hashFn = typeof this.options.hash === 'function' ? this.options.hash
             : this.options.hash = Hasher[ this.options.hash as keyof Hasher ] }
-        catch ( err ) { throw Error ( `Cannot set hasher function`, { cause: err } ) }
+        catch ( err ) { throw Error ( `Cannot set hash function`, { cause: err } ) }
     }
 
 }
