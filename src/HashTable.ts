@@ -61,4 +61,24 @@ export class HashTable {
         return this.keygen( strs, pfx, sfx, sorted );
     }
 
+    public has ( key: string ) : boolean {
+        return this.table.has( key );
+    }
+
+    public get< T = any > ( key: string ) : T | undefined {
+        return this.table.get( key );
+    }
+
+    public delete ( key: string ) : boolean {
+        return this.table.delete( key );
+    }
+
+    public clear () : void {
+        this.table.clear();
+    }
+
+    public size () : number {
+        return this.table.size;
+    }
+
 }
