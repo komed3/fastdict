@@ -17,6 +17,11 @@ export class Hasher {
             hash ^= chunk;
             hash = Math.imul( hash, 0x01000193 );
         }
+
+        for ( ; i < len; i++ ) {
+            hash ^= str.charCodeAt( i );
+            hash = Math.imul( hash, 0x01000193 );
+        }
     }
 
 }
