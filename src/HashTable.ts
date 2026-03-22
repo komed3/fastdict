@@ -114,6 +114,10 @@ export class HashTable {
         this.table.clear();
     }
 
+    public clearCache () : void {
+        this.hashCache.clear();
+    }
+
     public size () : number {
         return this.table.size;
     }
