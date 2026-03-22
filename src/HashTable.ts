@@ -7,16 +7,18 @@ export interface HashOptions {
     hash?: Hash;
     seed?: number | undefined;
     maxStrLen?: number;
-    fifo?: boolean;
     maxSize?: number;
+    maxCacheSize?: number;
+    fifo?: boolean;
 }
 
 
 const DEFAULT_OPTIONS: HashOptions = {
     hash: 'fasthash',
     maxStrLen: 2048,
-    fifo: true,
-    maxSize: 10_000
+    maxSize: 10_000,
+    maxCacheSize: 100_000,
+    fifo: true
 };
 
 
@@ -25,8 +27,9 @@ export class HashTable {
     private readonly options: HashOptions;
     private readonly seed: number | undefined;
     private readonly maxStrLen: number;
-    private readonly fifo: boolean;
     private readonly maxSize: number;
+    private readonly maxCacheSize: number;
+    private readonly fifo: boolean;
     private readonly hashFn: HashFn;
 
     private table = new Map< string, any > ();
@@ -36,8 +39,9 @@ export class HashTable {
         this.options = { ...DEFAULT_OPTIONS, ...options };
         this.seed = this.options.seed;
         this.maxStrLen = this.options.maxStrLen!;
-        this.fifo = this.options.fifo!;
+        this.maxCacheSize = this.options.maxCacheSize!;
         this.maxSize = this.options.maxSize!;
+        this.fifo = this.options.fifo!;
 
         try {
             this.hashFn = typeof this.options.hash === 'function'
@@ -52,24 +56,31 @@ export class HashTable {
     }
 
     protected keygen ( strs: string[], pfx?: string, sfx?: string, sorted: boolean = false ) : string | false {
-        const seed = this.seed, maxLen = this.maxStrLen, n = strs.length;
+        const seed = this.seed, len = this.maxStrLen, size = this.maxCacheSize, n = strs.length;
         const hashes: number[] = new Array( n );
 
         for ( let i = 0; i < n; i++ ) {
             const s = strs[ i ];
-            if ( s.length > maxLen ) return false;
+            if ( s.length > len ) return false;
             hashes[ i ] = this.hashFn( s, seed );
         }
 
-        if ( sorted ) hashes.sort( ( a, b ) => a - b );
+        if ( sorted && n > 1 ) {
+            if ( n === 2 ) { if ( hashes[ 0 ] > hashes[ 1 ] ) {
+                const tmp = hashes[ 0 ];
+                hashes[ 0 ] = hashes[ 1 ];
+                hashes[ 1 ] = tmp;
+            } } else hashes.sort( ( a, b ) => a - b );
+        }
 
-        let key = pfx ?? '';
+        if ( this.hashCache.size > size ) this.hashCache.clear();
+
+        let key = pfx ?? '', h, s;
         for ( let i = 0; i < n; i++ ) {
-            let h = hashes[ i ];
-            let s = this.hashCache.get( h );
+            s = this.hashCache.get( h = hashes[ i ] );
 
-            if ( ! s ) {
-                s = h.toString( 36 ).padStart( 7, '0' );
+            if ( s === undefined ) {
+                s = h.toString( 36 ).padStart( 8, '0' );
                 this.hashCache.set( h, s );
             }
 
