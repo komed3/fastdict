@@ -1,17 +1,17 @@
-# Hash Table
+# fastdict
 
-A fast and efficient hash table implementation for caching and data storage with optimized hash functions, written in TypeScript.
+A fast and efficient dictionary implementation for caching and data storage with optimized hash functions, written in TypeScript.
 
-`@komed3/hashtable` provides a high-performance `HashTable` class with support for customizable hashing algorithms (including FNV-1a and MurmurHash3), seedable hashes, and FIFO-based eviction to manage memory usage efficiently.
+`fastdict` provides a high-performance `Dict` class with support for customizable hashing algorithms (including FNV-1a and MurmurHash3), seedable hashes, and FIFO-based eviction to manage memory usage efficiently.
 
-A thrid hash algorithm named `fasthash` which is included, based on FNV-1a and the MurMurHash3 finalizer. This algorithm is optimized for performance.
+A third hash algorithm named `fasthash` is included, based on FNV-1a and the MurmurHash3 finalizer. This algorithm is optimized for performance.
 
 ## Installation
 
 Install via npm:
 
 ```bash
-npm install @komed3/hashtable
+npm install fastdict
 ```
 
 ## Quick usage
@@ -19,27 +19,27 @@ npm install @komed3/hashtable
 Create a new instance and manage your data:
 
 ```ts
-import { HashTable } from '@komed3/hashtable';
+import { Dict } from 'fastdict';
 
 // initialize with default options (fasthash, max 10,000 items)
-const table = new HashTable();
+const dict = new Dict();
 
 // generate a unique key from string components
-const key = table.key( [ 'user', '123' ] );
+const key = dict.key( [ 'user', '123' ] );
 
 if ( key ) {
 	// store data
-	table.set( key, { name: 'Max', role: 'admin' } );
+	dict.set( key, { name: 'Max', role: 'admin' } );
 
 	// retrieve data
-	const user = table.get( key );
+	const user = dict.get( key );
 	console.log( user ); // { name: 'Max', role: 'admin' }
 
 	// check existence
-	console.log( table.has( key ) ); // true
+	console.log( dict.has( key ) ); // true
 
 	// delete entry
-	table.delete( key );
+	dict.delete( key );
 }
 ```
 
@@ -47,21 +47,21 @@ if ( key ) {
 
 ### Instantiate
 
-- `new HashTable( options? )`  
-  Creates a new `HashTable` instance with optional configuration.
+- `new Dict( options? )`  
+  Creates a new `Dict` instance with optional configuration.
 
 ### Storage & Retrieval
 
 - `set< T >( key: string, entry: T, update: boolean = true ) : boolean`  
-  Stores an entry. If the table is full and `fifo` is enabled, the oldest entry is removed. Returns `false` if `update` is false and key exists, or if table is full and FIFO is disabled.
+  Stores an entry. If the dict is full and `fifo` is enabled, the oldest entry is removed. Returns `false` if `update` is false and key exists, or if dict is full and FIFO is disabled.
 - `get< T >( key: string ) : T | undefined`  
   Retrieves the entry associated with the given key.
 - `has( key: string ) : boolean`  
-  Returns `true` if the key exists in the table.
+  Returns `true` if the key exists in the dict.
 - `delete( key: string ) : boolean`  
-  Removes an entry from the table. Returns `true` if deleted.
+  Removes an entry from the dict. Returns `true` if deleted.
 - `clear() : void`  
-  Clears all entries from the table.
+  Clears all entries from the dict.
 - `size() : number`  
   Returns the current number of entries.
 
@@ -100,15 +100,15 @@ const myHash = ( str: string, seed?: number ) : number => {
 	return someNumericHash;
 };
 
-const table = new HashTable( { hash: myHash } );
+const dict = new Dict( { hash: myHash } );
 ```
 
 ### Overriding keygen()
 
-You can extend the `HashTable` class to implement your own key generation logic by overriding the `protected keygen()` method:
+You can extend the `Dict` class to implement your own key generation logic by overriding the `protected keygen()` method:
 
 ```ts
-class MyTable extends HashTable {
+class MyDict extends Dict {
 	protected override keygen ( strs: string[], pfx?: string, sfx?: string ) : string | false {
 		// custom logic before or after default hashing
 		const baseKey = super.keygen( strs, pfx, sfx );
