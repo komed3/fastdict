@@ -9,6 +9,16 @@
     "url": "https://komed3.de"
   },
   "homepage": "https://github.com/komed3/hashtable",
+  "keywords": [
+    "hashtable",
+    "hash",
+    "dictionary",
+    "collection",
+    "hash-function",
+    "fnv-1a",
+    "murmur3",
+    "customizable"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/komed3/hashtable.git"
@@ -28,9 +38,9 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "types": "dist/HashTable.d.ts",
-  "main": "dist/HashTable.cjs",
-  "module": "dist/HashTable.mjs",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "scripts": {
     "build": "rollup -c && tsc --emitDeclarationOnly --outFile dist/index.d.ts"
   },
