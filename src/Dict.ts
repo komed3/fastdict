@@ -11,6 +11,7 @@
 
 'use strict';
 
+
 import { Hasher } from './Hasher';
 
 /** Function type for custom hash functions. */
